@@ -28,16 +28,18 @@
   const cents=n=>Math.round(n*100);
   function number(n,min,max,integer=false){if(typeof n!=='number'||!Number.isFinite(n)||n<min||n>max||(integer&&!Number.isInteger(n)))throw new RangeError('Enter a valid number within the shown limits.');return n;}
   function defaultConfig(preset='retail'){
-    const config={panels:4,holds:20,contingency:10,holdPack:20,preset,prices:Object.fromEntries(components.map(c=>[c.id,c.price]))};
+    const config={panels:4,holds:20,contingency:10,holdPack:20,includeMatting:true,preset,prices:Object.fromEntries(components.map(c=>[c.id,c.price]))};
     if(preset==='value')config.prices.plywood=95.48;return config;
   }
   function estimate(config){
     const p=number(config.panels,1,24,true),h=number(config.holds,0,Math.min(1000,p*49),true),reserve=number(config.contingency,0,100);
     if(![20,100].includes(config.holdPack))throw new RangeError('Choose a 20 or 100 hold pack.');
-    const quantities={plywood:Math.ceil(p/2),cnc:p,tnuts:Math.ceil(p*49/100),retaining:Math.ceil(p*98/100),frame:p,fixings:p,holds:Math.ceil(h/config.holdPack),bolts:h,finishing:1,matting:1,delivery:1,parcel:1,matfreight:1,labour:1};
+    const quantities={plywood:Math.ceil(p/2),cnc:p,tnuts:Math.ceil(p*49/100),retaining:Math.ceil(p*98/100),frame:p,fixings:p,holds:Math.ceil(h/config.holdPack),bolts:h,finishing:1,matting:config.includeMatting?1:0,delivery:1,parcel:1,matfreight:config.includeMatting?1:0,labour:1};
     const rows=components.map(c=>{const price=number(config.prices[c.id],0,100000);return {...c,quantity:quantities[c.id],unitPriceCents:cents(price),totalCents:quantities[c.id]*cents(price),custom:price!==c.price};});
     const subtotalCents=rows.reduce((sum,r)=>sum+r.totalCents,0),contingencyCents=Math.round(subtotalCents*reserve/100);
-    return {rows,area:Math.round(p*144)/100,nuts:p*49,retainingScrews:p*98,purchasedHolds:quantities.holds*config.holdPack,subtotalCents,contingencyCents,totalCents:subtotalCents+contingencyCents};
+    const panelIds=new Set(['plywood','cnc','tnuts','retaining','frame','fixings','holds','bolts']);
+    const panelSubtotalCents=rows.filter(r=>panelIds.has(r.id)).reduce((sum,r)=>sum+r.totalCents,0);
+    return {rows,area:Math.round(p*144)/100,nuts:p*49,retainingScrews:p*98,purchasedHolds:quantities.holds*config.holdPack,panelSubtotalCents,panelTotalCents:panelSubtotalCents+Math.round(panelSubtotalCents*reserve/100),subtotalCents,contingencyCents,totalCents:subtotalCents+contingencyCents};
   }
   function landedCost(quote){
     number(quote.required,1,100000,true);number(quote.quantity,quote.required,100000,true);

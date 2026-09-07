@@ -12,7 +12,7 @@
     tr.querySelector('input').addEventListener('input',update);
   }
   function syncControls(){
-    $('budget-panels').value=config.panels;$('budget-holds').value=config.holds;$('budget-contingency').value=config.contingency;$('budget-pack').value=config.holdPack;
+    $('budget-panels').value=config.panels;$('budget-holds').value=config.holds;$('budget-contingency').value=config.contingency;$('budget-pack').value=config.holdPack;$('budget-matting').checked=config.includeMatting!==false;
     for(const c of M.components)rows.get(c.id).querySelector('input').value=config.prices[c.id];
     $('preset-value').setAttribute('aria-pressed',String(config.preset==='value'));$('preset-retail').setAttribute('aria-pressed',String(config.preset==='retail'));
   }
@@ -20,12 +20,13 @@
   function update(){
     const panelCount=readNumber('budget-panels');
     if(Number.isInteger(panelCount)&&panelCount>=1&&panelCount<=24)$('budget-holds').max=Math.min(1000,panelCount*49);
-    const next={...config,panels:readNumber('budget-panels'),holds:readNumber('budget-holds'),contingency:readNumber('budget-contingency'),holdPack:Number($('budget-pack').value),prices:{}};
+    const next={...config,panels:readNumber('budget-panels'),holds:readNumber('budget-holds'),contingency:readNumber('budget-contingency'),holdPack:Number($('budget-pack').value),includeMatting:$('budget-matting').checked,prices:{}};
     for(const c of M.components){const input=rows.get(c.id).querySelector('input');next.prices[c.id]=input.value===''?NaN:input.valueAsNumber;input.setAttribute('aria-invalid',String(!input.validity.valid||input.value===''));}
+    if(!localDeliveryEdited&&$('quote-component').value==='plywood'&&Number.isFinite(next.prices.delivery))$('quote-local-freight').value=next.prices.delivery;
     try{result=M.estimate(next);config=next;$('budget-error').hidden=true;}
     catch{
       result=null;$('budget-error').hidden=false;$('budget-error').textContent='Enter whole quantities within the shown limits (up to 49 installed holds per panel), a contingency from 0–100%, and non-negative prices. Fill every price; use 0 for items you already own.';
-      for(const id of ['budget-total','budget-subtotal','budget-reserve','budget-transport'])$(id).textContent='—';
+      for(const id of ['budget-total','budget-panel-total','budget-panel-subtotal','budget-subtotal','budget-reserve','budget-transport'])$(id).textContent='—';
       $('budget-comparison').textContent='Complete the inputs to calculate the estimate.';$('cost-breakdown').replaceChildren();
       for(const tr of rows.values())tr.querySelector('.component-total').textContent='—';
       compareQuote();return;
@@ -46,7 +47,7 @@
     }
     const facts=[`${result.area.toFixed(2)} m² of wall`,`${Math.ceil(config.panels/2)} full sheets`,`${result.nuts} T-nuts`,`${result.retainingScrews} retaining screws`,`${result.purchasedHolds} holds purchased / ${config.holds} installed`];
     $('budget-facts').replaceChildren(...facts.map(text=>{const span=document.createElement('span');span.textContent=text;return span;}));
-    $('budget-total').textContent=euro(result.totalCents);$('budget-subtotal').textContent=euro(result.subtotalCents);$('budget-reserve').textContent=euro(result.contingencyCents);$('reserve-percent').textContent=`${config.contingency}%`;
+    $('budget-total').textContent=euro(result.totalCents);$('budget-panel-total').textContent=euro(result.panelTotalCents);$('budget-panel-subtotal').textContent=euro(result.panelSubtotalCents);$('budget-subtotal').textContent=euro(result.subtotalCents);$('budget-reserve').textContent=euro(result.contingencyCents);$('reserve-percent').textContent=`${config.contingency}%`;
     const groups={};for(const row of result.rows)groups[row.group]=(groups[row.group]||0)+row.totalCents;
     $('budget-transport').textContent=euro(groups.Transport);
     $('cost-breakdown').replaceChildren(...Object.entries(groups).filter(([,cost])=>cost>0).sort((a,b)=>b[1]-a[1]).map(([name,cost])=>{
@@ -72,6 +73,7 @@
   $('preset-retail').addEventListener('click',()=>applyPreset('retail'));
   $('budget-reset').addEventListener('click',()=>{config=M.defaultConfig('value');syncControls();update();resetQuote();});
   for(const id of ['budget-panels','budget-holds','budget-contingency'])$(id).addEventListener('input',update);
+  $('budget-matting').addEventListener('change',update);
   $('budget-pack').addEventListener('change',()=>{config.holdPack=Number($('budget-pack').value);config.prices.holds=config.holdPack===100?249.95:111.03;rows.get('holds').querySelector('input').value=config.prices.holds;update();});
   $('use-value-wood').addEventListener('click',()=>{config.preset='value';config.prices.plywood=95.48;rows.get('plywood').querySelector('input').value=95.48;$('preset-value').setAttribute('aria-pressed','true');$('preset-retail').setAttribute('aria-pressed','false');update();});
   $('use-best-holds').addEventListener('click',()=>{const bulk=Math.ceil(config.holds/100)*24995<Math.ceil(config.holds/20)*11103;config.holdPack=bulk?100:20;config.prices.holds=bulk?249.95:111.03;$('budget-pack').value=config.holdPack;rows.get('holds').querySelector('input').value=config.prices.holds;update();});
