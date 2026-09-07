@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f1eb">
+  <title>Climb / From plywood to climbing wall</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="vendor/three.min.js"></script>
+  <script defer src="models.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header><a class="brand" href="./" aria-label="Climb home"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="m3 26 10-20 6 12 4-8 7 16H3Z" stroke="currentColor" stroke-width="2.5"/></svg>climb<span>/</span></a><span class="header-note">MATERIAL → MOVEMENT</span><span class="edition">PROCESS STUDY <b>001</b></span></header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">THE MAKING OF A CLIMBING WALL</p><h1>From a sheet.<br>To your next move.</h1></div><p class="intro-description">One material. Three transformations.<br>Explore how birch plywood becomes<br>a wall made for movement.</p></section>
+    <section class="viewer" aria-label="Interactive 3D climbing wall assembly">
+      <div id="viewport" role="img" aria-label="Animated 3D model of CNC machining, rear T-nut installation, and climbing wall assembly"></div>
+      <div class="scene-top"><span class="live-dot"></span><span>3D PROCESS</span><span class="scene-index" id="scene-index">01 / 03</span></div>
+      <div class="scene-caption"><p class="eyebrow" id="phase">PRECISION / PREPARATION</p><h2 id="scene-title">Cut & drill.</h2><p id="scene-description">A CNC router drills the hole grid before cutting the panel perimeter.</p><div class="tags" id="tags"><span>BIRCH PLYWOOD</span><span>18 MM</span></div></div>
+      <div class="operation"><span class="pulse"></span><span id="operation">Preparing the first hole</span></div>
+      <div class="view-tools"><button id="reset-view" title="Reset camera" aria-label="Reset camera">↺</button><span>DRAG TO ORBIT · SCROLL TO ZOOM</span></div>
+      <div id="webgl-error" hidden>Your browser could not start the 3D view. Enable hardware acceleration and reload, or open this page in a browser with WebGL support.</div>
+    </section>
+    <nav class="chapters" aria-label="Process chapters">
+      <button class="chapter active" data-stage="0" aria-current="step"><span class="chapter-number">01</span><span><strong>Cut & drill</strong><small>Shape the starting point</small></span><span class="chapter-arrow">↗</span></button>
+      <button class="chapter" data-stage="1"><span class="chapter-number">02</span><span><strong>Install T-nuts</strong><small>Make the connection</small></span><span class="chapter-arrow">↗</span></button>
+      <button class="chapter" data-stage="2"><span class="chapter-number">03</span><span><strong>Assemble & set</strong><small>Bring the wall to life</small></span><span class="chapter-arrow">↗</span></button>
+    </nav>
+    <section class="playback" aria-label="Animation playback">
+      <button id="play" aria-label="Pause animation" title="Play / pause (Space)">Ⅱ</button><button id="restart" aria-label="Restart animation" title="Restart">↶</button>
+      <span class="time" id="time">00:00</span><label class="sr-only" for="timeline">Animation position</label><input id="timeline" type="range" min="0" max="42" step="0.01" value="0"><span class="time">00:42</span>
+      <label class="sr-only" for="speed">Playback speed</label><select id="speed" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select>
+    </section>
+    <footer><span>1200 × 1200 MM PANELS <i>·</i> 18 MM BIRCH PLYWOOD</span><p>Concept illustration. Frame and building anchors require site-specific design.</p></footer>
+  </main>
+</body>
+</html>
