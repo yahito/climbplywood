@@ -3,7 +3,7 @@
   const M=CostModel,$=id=>document.getElementById(id),storageKey='climb-budget-v1';
   const euro=cents=>new Intl.NumberFormat('en-IE',{style:'currency',currency:'EUR'}).format(cents/100);
   let config=M.defaultConfig('panels'),result=null,localDeliveryEdited=false;
-  config.holds=0;config.includeMatting=false;for(const id of ['cnc','tnuts','retaining','frame','fixings','holds','bolts','finishing','matting','delivery','parcel','matfreight'])config.prices[id]=0;
+  config.holds=0;config.includeMatting=false;config.prices.plywood=46.75;for(const id of ['cnc','tnuts','retaining','frame','fixings','holds','bolts','finishing','matting','delivery','parcel','matfreight'])config.prices[id]=0;
   try {const stored=JSON.parse(localStorage.getItem(storageKey));if(stored){M.estimate(stored);config=stored;}}catch{}
   const rows=new Map();
   for(const component of M.components){
@@ -40,6 +40,7 @@
       let source=row.source,reference=row.price;
       if(row.id==='plywood'&&config.preset==='value'){source=M.sources.valuePlywood;reference=95.48;}
       if(row.id==='plywood'&&config.preset==='bouwsub'){source=M.sources.bouwsubPlywood;reference=46.75;}
+      if(row.id==='plywood'&&config.preset==='panels'){source=M.sources.bouwsubPlywood;reference=46.75;}
       if(row.id==='holds'&&config.holdPack===100){source=M.sources.bulkHolds;reference=249.95;}
       if(row.id==='holds')tr.querySelector('.component-note').textContent=config.holdPack===100?'100-hold Euroholds Starter Pack reference, with a mix of hold sizes. Hardware excluded; surplus holds stay in the purchase total.':row.note;
       const custom=Math.round(config.prices[row.id]*100)!==Math.round(reference*100);
@@ -73,8 +74,8 @@
   }
   $('preset-value').addEventListener('click',()=>applyPreset('value'));
   $('preset-retail').addEventListener('click',()=>applyPreset('retail'));
-  $('preset-panels').addEventListener('click',()=>{config=M.defaultConfig('panels');config.holds=0;config.includeMatting=false;for(const id of ['cnc','tnuts','retaining','frame','fixings','holds','bolts','finishing','matting','delivery','parcel','matfreight'])config.prices[id]=0;syncControls();update();resetQuote();});
-  $('budget-reset').addEventListener('click',()=>{config=M.defaultConfig('panels');config.holds=0;config.includeMatting=false;for(const id of ['cnc','tnuts','retaining','frame','fixings','holds','bolts','finishing','matting','delivery','parcel','matfreight'])config.prices[id]=0;syncControls();update();resetQuote();});
+  $('preset-panels').addEventListener('click',()=>{config=M.defaultConfig('panels');config.holds=0;config.includeMatting=false;config.prices.plywood=46.75;for(const id of ['cnc','tnuts','retaining','frame','fixings','holds','bolts','finishing','matting','delivery','parcel','matfreight'])config.prices[id]=0;syncControls();update();resetQuote();});
+  $('budget-reset').addEventListener('click',()=>{config=M.defaultConfig('panels');config.holds=0;config.includeMatting=false;config.prices.plywood=46.75;for(const id of ['cnc','tnuts','retaining','frame','fixings','holds','bolts','finishing','matting','delivery','parcel','matfreight'])config.prices[id]=0;syncControls();update();resetQuote();});
   for(const id of ['budget-panels','budget-holds','budget-contingency'])$(id).addEventListener('input',update);
   $('budget-matting').addEventListener('change',update);
   $('budget-pack').addEventListener('change',()=>{config.holdPack=Number($('budget-pack').value);config.prices.holds=config.holdPack===100?249.95:111.03;rows.get('holds').querySelector('input').value=config.prices.holds;update();});
