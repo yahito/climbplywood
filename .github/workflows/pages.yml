@@ -27,7 +27,7 @@ jobs:
       - name: Prepare static site
         run: |
           mkdir -p _site/vendor
-          cp animation/index.html animation/app.js animation/models.js animation/style.css _site/
+          cp animation/index.html animation/app.js animation/models.js animation/style.css animation/cost-model.js animation/costs.js animation/costs.css _site/
           cp animation/vendor/three.min.js animation/vendor/LICENSE _site/vendor/
           cp output/animation/climbing-wall-process.mp4 _site/
           touch _site/.nojekyll

@@ -6,9 +6,12 @@
   <meta name="theme-color" content="#f3f1eb">
   <title>Climb / From plywood to climbing wall</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="costs.css">
   <script defer src="vendor/three.min.js"></script>
   <script defer src="models.js"></script>
   <script defer src="app.js"></script>
+  <script defer src="cost-model.js"></script>
+  <script defer src="costs.js"></script>
 </head>
 <body>
   <header><a class="brand" href="./" aria-label="Climb home"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="m3 26 10-20 6 12 4-8 7 16H3Z" stroke="currentColor" stroke-width="2.5"/></svg>climb<span>/</span></a><span class="header-note">MATERIAL → MOVEMENT</span><span class="edition">PROCESS STUDY <b>001</b></span></header>
@@ -31,6 +34,49 @@
       <button id="play" aria-label="Pause animation" title="Play / pause (Space)">Ⅱ</button><button id="restart" aria-label="Restart animation" title="Restart">↶</button>
       <span class="time" id="time">00:00</span><label class="sr-only" for="timeline">Animation position</label><input id="timeline" type="range" min="0" max="42" step="0.01" value="0"><span class="time">00:42</span>
       <label class="sr-only" for="speed">Playback speed</label><select id="speed" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select>
+    </section>
+    <a class="budget-jump" href="#budget">Plan the build · components & costs <span>↓</span></a>
+    <section id="budget" class="budget" aria-labelledby="budget-title">
+      <div class="budget-heading"><div><p class="eyebrow">FROM THE PROCESS TO THE PURCHASE LIST</p><h2 id="budget-title">Know what goes into it.</h2></div><p>EUR · Netherlands / EU planning basis<br>Supplier references checked 7 September 2026</p></div>
+      <p class="budget-intro">Build a budget around the components, then compare the cost of getting them to your door. Every price is editable. The 3D reference above shows 4 panels and 20 holds.</p>
+      <div class="budget-presets" role="group" aria-label="Price presets"><button id="preset-value" aria-pressed="true">EU value sourcing</button><button id="preset-retail" aria-pressed="false">Retail reference</button><button id="budget-reset" class="reset-budget">Reset estimate ↺</button></div>
+      <div class="budget-controls">
+        <label>Panels <input id="budget-panels" type="number" min="1" max="24" step="1" value="4"><small>1200 × 1200 mm each</small></label>
+        <label>Holds to install <input id="budget-holds" type="number" min="0" max="1000" step="1" value="20"><small>Packs rounded up at purchase</small></label>
+        <label>Hold purchase pack <select id="budget-pack"><option value="20">20-hold set</option><option value="100">100-hold bulk pack</option></select><small>Changing pack loads its reference price</small></label>
+        <label>Contingency (%) <input id="budget-contingency" type="number" min="0" max="100" step="1" value="10"><small>Added to goods, work and transport</small></label>
+      </div>
+      <p id="budget-error" class="budget-error" role="alert" hidden></p>
+      <div class="budget-facts" id="budget-facts"></div>
+      <div class="budget-layout">
+        <div class="component-list"><div class="list-heading"><h3>Components & services</h3><span>PRICE PER PURCHASE UNIT · EUR</span></div>
+          <table class="cost-table"><caption class="sr-only">Required components, purchase quantities, editable unit prices and totals</caption><thead><tr><th scope="col">Component</th><th scope="col">Buy</th><th scope="col">Unit price</th><th scope="col">Total</th></tr></thead><tbody id="component-rows"></tbody></table>
+          <p class="price-basis">Supplier references include the VAT displayed by each supplier; destination VAT and checkout prices may differ. Allowances are planning inputs, not quotations. Shipping is budgeted separately below the materials. No wholesale discount is assumed.</p>
+        </div>
+        <aside class="budget-summary" aria-label="Estimate summary"><p class="eyebrow">ESTIMATED BUILD BUDGET</p><output id="budget-total" aria-live="polite">—</output><p class="total-caption">Including transport & contingency</p><dl><div><dt>Before contingency</dt><dd id="budget-subtotal">—</dd></div><div><dt>Contingency <span id="reserve-percent">10%</span></dt><dd id="budget-reserve">—</dd></div><div><dt>Transport included</dt><dd id="budget-transport">—</dd></div></dl><div id="cost-breakdown" class="cost-breakdown"></div><p id="budget-comparison" class="budget-comparison"></p><p class="summary-note" id="labour-note">Design, paid installation and tools are excluded until you enter a quote.</p><p class="summary-note">Matting and its freight are fixed project allowances. Requote them when the landing area changes.</p></aside>
+      </div>
+      <section class="savings" aria-labelledby="savings-title"><p class="eyebrow">SPEND LESS WHERE IT COUNTS</p><h3 id="savings-title">Compare the cart, not just the unit price.</h3><div class="saving-cards">
+        <article><span class="saving-index">01 / PLYWOOD</span><h4 id="wood-saving">Compare face grades</h4><p>BB/BB birch: €95.48 per sheet. B/BB reference: €204.22. Repaired faces can lower cost while keeping 18 mm thickness; confirm the required structural grade.</p><a href="https://multiplexfabriek.nl/product/berken-bb-bb-ext-ce2-fsc-mix-70-1250x2500x18-mm/" target="_blank" rel="noopener noreferrer">View BB/BB reference ↗</a><button id="use-value-wood">Use €95.48 / sheet</button></article>
+        <article><span class="saving-index">02 / HOLDS</span><h4 id="hold-saving">Bulk has a break-even point.</h4><p id="hold-comparison"></p><p>Different size mixes, not identical sets. Compare suitable grips and extra parcel freight as well as the total.</p><a href="https://euroholds.com/en/offers-promotions/196-starter-pack-bolt-on.html" target="_blank" rel="noopener noreferrer">100-hold supplier reference ↗</a><button id="use-best-holds">Use lower goods cost</button></article>
+        <article><span class="saving-index">03 / CNC & TRANSPORT</span><h4>One batch. Fewer journeys.</h4><p>Request one CNC setup for all panels and nest two panels in each full sheet. Compare delivered machining with collection, including vehicle hire and fuel. Consolidate hardware orders where practical.</p><p class="saving-footnote">Savings are quote-dependent; the calculator does not invent a batch discount.</p></article>
+        <article><span class="saving-index">04 / MATTING</span><h4 id="mat-cost">Get this quote first.</h4><p>Ask an EU bouldering-mat maker for standard modules or surplus stock matching the required landing specification. Compare the cover, foam, joins and bulky delivery together.</p><a href="https://gubbies.com/products/one-cover-boulder-matts-vinyl" target="_blank" rel="noopener noreferrer">Example EU mat supplier ↗</a><p class="saving-footnote">No saving assumed until quoted. Keep the required landing performance and coverage.</p></article>
+      </div></section>
+      <section class="landed" aria-labelledby="landed-title"><div><p class="eyebrow">EU WHOLESALE / NON-EU IMPORT</p><h3 id="landed-title">Does a cheaper quote survive delivery?</h3><p class="budget-intro">Compare one complete component order. Include the full minimum order, surplus units, transport, insurance and final delivery. This comparison does not change the build estimate.</p></div>
+        <div class="quote-controls">
+          <label>Compare component <select id="quote-component"><option value="plywood">Plywood sheets</option><option value="holds">Climbing holds</option><option value="matting">Complete matting solution</option></select></label>
+          <label>Quote origin <select id="quote-origin"><option value="eu">EU · prices including VAT</option><option value="import">Outside EU · prices excluding VAT</option></select></label>
+          <label>Units in quoted order <input id="quote-quantity" type="number" min="1" max="100000" step="1" value="2"></label>
+          <label>Goods · full order (€) <input id="quote-goods" type="number" min="0" max="100000" step="0.01" placeholder="Enter supplier quote"></label>
+          <label>Freight & insurance (€) <input id="quote-freight" type="number" min="0" max="100000" step="0.01" placeholder="To final destination"></label>
+          <label>Current option: delivery (€) <input id="quote-local-freight" type="number" min="0" max="100000" step="0.01" value="75"></label>
+          <label class="import-field" hidden>Quoted duties / levies (€) <input id="quote-duty" type="number" min="0" max="100000" step="0.01" placeholder="From broker; 0 if confirmed"></label>
+          <label class="import-field" hidden>Import VAT (%) <input id="quote-vat" type="number" min="0" max="100" step="0.01" value="21"></label>
+          <label class="import-field" hidden>Clearance fees · incl. VAT (€) <input id="quote-fees" type="number" min="0" max="100000" step="0.01" placeholder="Enter fee, or confirmed 0"></label>
+        </div>
+        <p class="quote-requirement" id="quote-requirement"></p>
+        <div class="quote-result" id="quote-result" aria-live="polite">Enter goods and freight to compare delivered costs.</div>
+        <p class="import-note" id="import-note" hidden>Import estimate: goods + freight/insurance + quoted duties, then import VAT, plus VAT-inclusive clearance fees. 21% is the Netherlands default; change for your destination. Enter all levies from the broker for the actual product, origin and shipment; no tariff or exemption is assumed. <a href="https://www.belastingdienst.nl/wps/wcm/connect/bldcontentnl/belastingdienst/zakelijk/btw/zakendoen_met_het_buitenland/zakendoen_buiten_de_eu/btw_berekenen/btw_berekenen_bij_invoer_goederen_uit_niet_eu_landen" target="_blank" rel="noopener noreferrer">Import VAT basis ↗</a></p>
+      </section>
     </section>
     <footer><span>1200 × 1200 MM PANELS <i>·</i> 18 MM BIRCH PLYWOOD</span><p>Concept illustration. Frame and building anchors require site-specific design.</p></footer>
   </main>
