@@ -3,6 +3,7 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.CostModel=api;})(typeof window==='undefined'?globalThis:window,()=>{
   const sources={
     plywood:'https://www.houtshop.be/nl/plaatmateriaal/multiplex-berk-b-bb-18mm-2500x1250mm',
+    bouwsubPlywood:'https://bouwsub.nl/product/multiplex-hardhout-18mm-244x122cm-b-bb-onbehandeld/',
     valuePlywood:'https://multiplexfabriek.nl/product/berken-bb-bb-ext-ce2-fsc-mix-70-1250x2500x18-mm/',
     tnuts:'https://www.alpidex.com/en/fixing-of-climbing-holds/wood/special-t-nuts/100-x-special-t-nut-zinc-plated-m-10-professional_7205',
     holds:'https://www.erhardsport.de/en/climbing-holds-set-climb-it-free-radicals',

@@ -38,6 +38,7 @@
       tr.querySelector('.unit-label').textContent=row.id==='holds'?`${config.holdPack}-hold pack`:row.unit;
       let source=row.source,reference=row.price;
       if(row.id==='plywood'&&config.preset==='value'){source=M.sources.valuePlywood;reference=95.48;}
+      if(row.id==='plywood'&&config.preset==='bouwsub'){source=M.sources.bouwsubPlywood;reference=46.75;}
       if(row.id==='holds'&&config.holdPack===100){source=M.sources.bulkHolds;reference=249.95;}
       if(row.id==='holds')tr.querySelector('.component-note').textContent=config.holdPack===100?'100-hold Euroholds Starter Pack reference, with a mix of hold sizes. Hardware excluded; surplus holds stay in the purchase total.':row.note;
       const custom=Math.round(config.prices[row.id]*100)!==Math.round(reference*100);
@@ -75,7 +76,8 @@
   for(const id of ['budget-panels','budget-holds','budget-contingency'])$(id).addEventListener('input',update);
   $('budget-matting').addEventListener('change',update);
   $('budget-pack').addEventListener('change',()=>{config.holdPack=Number($('budget-pack').value);config.prices.holds=config.holdPack===100?249.95:111.03;rows.get('holds').querySelector('input').value=config.prices.holds;update();});
-  $('use-value-wood').addEventListener('click',()=>{config.preset='value';config.prices.plywood=95.48;rows.get('plywood').querySelector('input').value=95.48;$('preset-value').setAttribute('aria-pressed','true');$('preset-retail').setAttribute('aria-pressed','false');update();});
+  $('use-bouwsub-wood').addEventListener('click',()=>{config.preset='bouwsub';config.prices.plywood=46.75;rows.get('plywood').querySelector('input').value=46.75;document.querySelectorAll('.budget-presets button[aria-pressed]').forEach(b=>b.setAttribute('aria-pressed','false'));update();});
+  $('use-bouwsub').addEventListener('click',()=>{$('use-bouwsub-wood').click();});
   $('use-best-holds').addEventListener('click',()=>{const bulk=Math.ceil(config.holds/100)*24995<Math.ceil(config.holds/20)*11103;config.holdPack=bulk?100:20;config.prices.holds=bulk?249.95:111.03;$('budget-pack').value=config.holdPack;rows.get('holds').querySelector('input').value=config.prices.holds;update();});
   function quoteBasis(){
     if(!result)return null;const id=$('quote-component').value,row=result.rows.find(r=>r.id===id);
