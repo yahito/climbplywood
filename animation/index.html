@@ -39,10 +39,10 @@
     <section id="budget" class="budget" aria-labelledby="budget-title">
       <div class="budget-heading"><div><p class="eyebrow">FROM THE PROCESS TO THE PURCHASE LIST</p><h2 id="budget-title">Know what goes into it.</h2></div><p>EUR · Netherlands / EU planning basis<br>Supplier references checked 7 September 2026</p></div>
       <p class="budget-intro">Build a budget around the components, then compare the cost of getting them to your door. Every price is editable. The 3D reference above shows 4 panels and 20 holds.</p>
-      <div class="budget-presets" role="group" aria-label="Price presets"><button id="preset-value" aria-pressed="true">EU value sourcing</button><button id="preset-retail" aria-pressed="false">Retail reference</button><button id="use-bouwsub" aria-pressed="false">Bouwsub €46.75 / sheet</button><button id="budget-reset" class="reset-budget">Reset estimate ↺</button></div>
+      <div class="budget-presets" role="group" aria-label="Price presets"><button id="preset-panels" aria-pressed="true">Panels only</button><button id="preset-value" aria-pressed="false">EU value sourcing</button><button id="preset-retail" aria-pressed="false">Retail reference</button><button id="use-bouwsub" aria-pressed="false">Bouwsub €46.75 / sheet</button><button id="budget-reset" class="reset-budget">Reset estimate ↺</button></div>
       <div class="budget-controls">
         <label>Panels <input id="budget-panels" type="number" min="1" max="24" step="1" value="4"><small>1200 × 1200 mm each</small></label>
-        <label>Holds to install <input id="budget-holds" type="number" min="0" max="1000" step="1" value="20"><small>Packs rounded up at purchase</small></label>
+        <label>Holds to install <input id="budget-holds" type="number" min="0" max="1000" step="1" value="0"><small>Set to 0 while buying panels only</small></label>
         <label>Hold purchase pack <select id="budget-pack"><option value="20">20-hold set</option><option value="100">100-hold bulk pack</option></select><small>Changing pack loads its reference price</small></label>
         <label>Contingency (%) <input id="budget-contingency" type="number" min="0" max="100" step="1" value="10"><small>Added to goods, work and transport</small></label>
         <label class="check-label"><span>Landing protection</span><input id="budget-matting" type="checkbox" checked><small>Include matting + bulky freight in this estimate</small></label>

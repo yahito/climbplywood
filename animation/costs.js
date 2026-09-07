@@ -2,7 +2,8 @@
 (() => {
   const M=CostModel,$=id=>document.getElementById(id),storageKey='climb-budget-v1';
   const euro=cents=>new Intl.NumberFormat('en-IE',{style:'currency',currency:'EUR'}).format(cents/100);
-  let config=M.defaultConfig('value'),result=null,localDeliveryEdited=false;
+  let config=M.defaultConfig('panels'),result=null,localDeliveryEdited=false;
+  config.holds=0;config.includeMatting=false;for(const id of ['cnc','tnuts','retaining','frame','fixings','holds','bolts','finishing','matting','delivery','parcel','matfreight'])config.prices[id]=0;
   try {const stored=JSON.parse(localStorage.getItem(storageKey));if(stored){M.estimate(stored);config=stored;}}catch{}
   const rows=new Map();
   for(const component of M.components){
@@ -14,7 +15,7 @@
   function syncControls(){
     $('budget-panels').value=config.panels;$('budget-holds').value=config.holds;$('budget-contingency').value=config.contingency;$('budget-pack').value=config.holdPack;$('budget-matting').checked=config.includeMatting!==false;
     for(const c of M.components)rows.get(c.id).querySelector('input').value=config.prices[c.id];
-    $('preset-value').setAttribute('aria-pressed',String(config.preset==='value'));$('preset-retail').setAttribute('aria-pressed',String(config.preset==='retail'));
+    for(const id of ['preset-panels','preset-value','preset-retail','use-bouwsub'])$(id).setAttribute('aria-pressed','false');$(config.preset==='panels'?'preset-panels':config.preset==='value'?'preset-value':config.preset==='retail'?'preset-retail':'use-bouwsub').setAttribute('aria-pressed','true');
   }
   function readNumber(id){return $(id).value===''?NaN:$(id).valueAsNumber;}
   function update(){
@@ -72,7 +73,8 @@
   }
   $('preset-value').addEventListener('click',()=>applyPreset('value'));
   $('preset-retail').addEventListener('click',()=>applyPreset('retail'));
-  $('budget-reset').addEventListener('click',()=>{config=M.defaultConfig('value');syncControls();update();resetQuote();});
+  $('preset-panels').addEventListener('click',()=>{config=M.defaultConfig('panels');config.holds=0;config.includeMatting=false;for(const id of ['cnc','tnuts','retaining','frame','fixings','holds','bolts','finishing','matting','delivery','parcel','matfreight'])config.prices[id]=0;syncControls();update();resetQuote();});
+  $('budget-reset').addEventListener('click',()=>{config=M.defaultConfig('panels');config.holds=0;config.includeMatting=false;for(const id of ['cnc','tnuts','retaining','frame','fixings','holds','bolts','finishing','matting','delivery','parcel','matfreight'])config.prices[id]=0;syncControls();update();resetQuote();});
   for(const id of ['budget-panels','budget-holds','budget-contingency'])$(id).addEventListener('input',update);
   $('budget-matting').addEventListener('change',update);
   $('budget-pack').addEventListener('change',()=>{config.holdPack=Number($('budget-pack').value);config.prices.holds=config.holdPack===100?249.95:111.03;rows.get('holds').querySelector('input').value=config.prices.holds;update();});
